@@ -1,0 +1,168 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .hoverEffect {
+    @apply duration-300 cursor-pointer;
+  }
+
+  .headerSedenavLi {
+    @apply text-gray-300 cursor-pointer hover:underline underline-offset-2 hover:text-white;
+  }
+  
+  /* Add responsive utilities */
+  .responsive-container {
+    @apply w-full px-4 mx-auto sm:px-6 md:px-8 lg:px-12;
+  }
+  
+  .responsive-text {
+    @apply text-sm sm:text-base md:text-lg lg:text-xl;
+  }
+  
+  .responsive-heading {
+    @apply text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold;
+  }
+}
+
+@font-face {
+  font-family: 'Product Sans';
+  font-weight: 400;
+  src: local('Product Sans'), url('./assets/fonts/product_sans_regular.otf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Product Sans';
+  font-weight: 700;
+  src: local('Product Sans'), url('./assets/fonts/product_sans_bold.otf') format('truetype');
+}
+
+body {
+  font-family: "Product Sans";
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* Responsive font sizing */
+@media screen and (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+}
+
+nav .active li {
+  color: black;
+  font-weight: 600;
+  text-decoration: 1px underline black;
+}
+
+/* More comprehensive media queries */
+@media screen and (max-width: 992px) {
+  /* Tablet styles */
+  .view-product-details img {
+    width: 70%;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  /* Small tablet styles */
+  .view-product-details img {
+    width: 85%;
+  }
+}
+
+@media screen and (max-width: 665px) {
+  nav .active li {
+    color: white;
+    font-weight: 600;
+    text-decoration: 1px underline white;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  /* Mobile styles */
+  .view-product-details img {
+    width: 100%;
+  }
+  
+  .custom-slider .slick-slide>div {
+    padding: 0 8px;
+  }
+  
+  .custom-slider .slick-list {
+    margin: 0 -8px;
+  }
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.box-skeleton {
+  background: #eee;
+  background: linear-gradient(110deg, #ececec 8%, #f5f5f5 18%, #ececec 33%);
+  background-size: 200% 100%;
+  animation: 1.5s shine linear infinite;
+}
+
+@keyframes shine {
+  to {
+    background-position-x: -200%;
+  }
+}
+
+.custom-slider .slick-slide>div {
+  padding: 0 15px;
+}
+
+.custom-slider .slick-list {
+  margin: 0 -15px;
+}
+
+.custom-order-details-tabs .ant-tabs-tab-btn {
+  display: flex;
+  align-items: center;
+}
+
+/* Responsive typography for product details */
+.view-product-details h2 {
+  font-size: 20px;
+  line-height: 1.5;
+}
+
+.view-product-details h3 {
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+@media screen and (max-width: 480px) {
+  .view-product-details h2 {
+    font-size: 18px;
+  }
+  
+  .view-product-details h3 {
+    font-size: 16px;
+  }
+}
+
+.view-product-details ul {
+  padding-left: 16px;
+}
+
+.view-product-details a {
+ text-decoration: underline;
+}
+
+/* Make images more responsive */
+.view-product-details img {
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+  object-fit: contain;
+ }
+
+ .ant-image-preview-wrap {
+  z-index: 9999 !important;
+ }
