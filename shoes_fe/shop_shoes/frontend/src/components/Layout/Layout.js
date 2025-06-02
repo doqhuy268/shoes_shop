@@ -19,15 +19,12 @@ export default function Layout(props) {
   }, []);
   
   return (
-    <div className="flex flex-col min-h-screen">
+    <>
       <Header />
-      <main className="flex-grow min-h-[60vh] w-full">
-        {/* Responsive container to control content width */}
-        <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-4 sm:py-6 md:py-8">
-          <Outlet />
-        </div>
-      </main>
+      <div className="min-h-[60vh]">
+        <Outlet />
+      </div>
       <Footer />
-    </div>
+    </>
   );
 }

@@ -4,8 +4,6 @@ import NavTitle from "./NavTitle";
 
 const Color = () => {
   const [showColors, setShowColors] = useState(true);
-  const [selectedColor, setSelectedColor] = useState(null);
-  
   const colors = [
     {
       _id: 9001,
@@ -33,48 +31,32 @@ const Color = () => {
       base: "#3b82f6",
     },
   ];
-  
-  const toggleColors = () => {
-    setShowColors(!showColors);
-  };
-  
-  const handleColorSelect = (colorId) => {
-    setSelectedColor(selectedColor === colorId ? null : colorId);
-  };
 
   return (
-    <div className="mb-6 sm:mb-8">
-      <NavTitle 
-        title="Shop by Color" 
-        icons={true} 
-        isOpen={showColors}
-        onClick={toggleColors}
-      />
-      
+    <div>
+      <div
+        onClick={() => setShowColors(!showColors)}
+        className="cursor-pointer"
+      >
+        <NavTitle title="Shop by Color" icons={true} />
+      </div>
       {showColors && (
         <motion.div
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5 }}
-          className="mt-2 sm:mt-3"
         >
-          <ul className="flex flex-col gap-2 sm:gap-3 md:gap-4 text-[#767676]">
+          <ul className="flex flex-col gap-4 text-sm lg:text-base text-[#767676]">
             {colors.map((item) => (
               <li
                 key={item._id}
-                className={`border-b border-[#F0F0F0] pb-2 flex items-center gap-3 py-1 cursor-pointer hover:text-primeColor transition-colors duration-300 ${
-                  selectedColor === item._id ? 'text-primeColor' : ''
-                }`}
-                onClick={() => handleColorSelect(item._id)}
+                className="border-b-[1px] border-b-[#F0F0F0] pb-2 flex items-center gap-2"
               >
                 <span
                   style={{ background: item.base }}
-                  className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full inline-block border ${
-                    selectedColor === item._id ? 'ring-2 ring-offset-2 ring-gray-400' : ''
-                  }`}
-                  aria-hidden="true"
+                  className={`w-3 h-3 bg-gray-500 rounded-full`}
                 ></span>
-                <span className="text-sm sm:text-base">{item.title}</span>
+                {item.title}
               </li>
             ))}
           </ul>

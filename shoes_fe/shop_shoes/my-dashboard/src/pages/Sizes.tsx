@@ -119,21 +119,19 @@ export default function SizePage() {
   const deleteSizeItems = (record: any) => {
     confirmDelete(async () => {
       try {
-        const response = await SizeService.deleteSize(
-          record.sizeId!
-        );
+        const response = await SizeService.deleteSize(record.sizeId!);
         console.log("Delete response:", response);
         if (response.code === 0) {
+          // Cập nhật state local ngay lập tức
+          setSizes(prevSizes => prevSizes.filter(size => size.sizeId !== record.sizeId));
+          
           confirmAlert({
             title: "Thành công",
-            message: "Xóa kich cỡ thành công!",
+            message: "Kích cỡ đã được xóa thành công!",
             buttons: [
               {
                 label: "OK",
-                onClick: () => {
-                  // Cập nhật danh sách chất liệu và re-render
-                  setShouldRender((prev) => !prev);
-                },
+                onClick: () => {}
               },
             ],
           });
@@ -184,40 +182,42 @@ export default function SizePage() {
   };
 
   const onFinishEdit = async (values: any) => {
-    confirmEdit(async () => {
-      try {
-        const response = await SizeService.updateSize({
-          ...values,
-          sizeId: openEditModal.data.sizeId,
-        });
-
-        if (response.code === 0) {
-          // Đóng modal sau khi thao tác thành công
-          setOpenEditModal({ open: false, data: {} });
-
-          // Hiển thị thông báo xác nhận
-          confirmAlert({
-            title: "Thành công",
-            message: "Kích cỡ đã được cập nhật thành công!",
-            buttons: [
-              {
-                label: "OK",
-                onClick: () => {
-                  // Cập nhật danh sách chất liệu và re-render
-                  setShouldRender((prev) => !prev);
-                },
-              },
-            ],
+    setOpenEditModal({ open: false, data: {} });
+    setTimeout(() => {
+      confirmEdit(async () => {
+        try {
+          const response = await SizeService.updateSize({
+            ...values,
+            sizeId: openEditModal.data.sizeId,
           });
-        } else {
-          console.error("Error:", response.data.message);
-          // Nếu cần, hiển thị thông báo lỗi
+
+          if (response.code === 0) {
+            setSizes(prevSizes => 
+              prevSizes.map(size => 
+                size.sizeId === openEditModal.data.sizeId 
+                  ? { ...size, ...values }
+                  : size
+              )
+            );
+
+            confirmAlert({
+              title: "Thành công",
+              message: "Kích cỡ đã được cập nhật thành công!",
+              buttons: [
+                {
+                  label: "OK",
+                  onClick: () => {}
+                },
+              ],
+            });
+          } else {
+            console.error("Error:", response.data.message);
+          }
+        } catch (error) {
+          console.error("Error updating size:", error);
         }
-      } catch (error) {
-        console.error("Error updating size:", error);
-        // Nếu cần, hiển thị thông báo lỗi
-      }
-    });
+      });
+    }, 200);
   };
 
   const onFinishCreate = async (values: any) => {

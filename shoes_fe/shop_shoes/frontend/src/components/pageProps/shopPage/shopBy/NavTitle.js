@@ -1,21 +1,18 @@
 import React from "react";
 import { BiCaretDown } from "react-icons/bi";
 
-const NavTitle = ({ title, icons, isOpen, onClick }) => {
+const NavTitle = ({ title, icons }) => {
   return (
-    <div 
-      className="flex items-center justify-between pb-2 sm:pb-3 md:pb-5 cursor-pointer"
-      onClick={onClick}
-    >
+    <div className="flex items-center justify-between pb-5">
       {icons ? (
         <>
-          <h3 className="font-bold text-lg sm:text-lg md:text-xl text-primeColor">{title}</h3>
-          <span className={`transition-transform duration-300 ${isOpen ? 'rotate-180' : 'rotate-0'}`}>
-            <BiCaretDown className="text-base sm:text-lg" />
-          </span>
+          <h3 className="font-bold lg:text-xl text-primeColor">{title}</h3>
+          {icons && <BiCaretDown />}
         </>
       ) : (
-        <h3 className="font-bold text-lg sm:text-lg md:text-xl text-primeColor">{title}</h3>
+        <>
+          <h3 className="font-bold lg:text-xl text-primeColor">{title}</h3>
+        </>
       )}
     </div>
   );

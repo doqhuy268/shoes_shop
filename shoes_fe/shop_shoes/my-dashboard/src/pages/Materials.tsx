@@ -119,12 +119,22 @@ export default function StylePage() {
   const deleteStyleItems = (record: any) => {
     confirmDelete(async () => {
       try {
-        const response = await MaterialService.deleteMaterial(
-            record.materialId!
-        );
+        const response = await MaterialService.deleteMaterial(record.materialId!);
         console.log("Delete response:", response);
         if (response.code === 0) {
-          setShouldRender((prev) => !prev);
+          // Cập nhật state local ngay lập tức
+          setMaterials(prevMaterials => prevMaterials.filter(material => material.materialId !== record.materialId));
+          
+          confirmAlert({
+            title: "Thành công",
+            message: "Chất liệu đã được xóa thành công!",
+            buttons: [
+              {
+                label: "OK",
+                onClick: () => {}
+              },
+            ],
+          });
         }
       } catch (error) {
         console.error("Error deleting material:", error);
@@ -172,40 +182,45 @@ export default function StylePage() {
   };
 
   const onFinishEdit = async (values: any) => {
-    confirmEdit(async () => {
-      try {
-        const response = await MaterialService.updateMaterial({
-          ...values,
-          materialId: openEditModal.data.materialId,
-        });
-
-        if (response.code === 0) {
-          // Đóng modal sau khi thao tác thành công
-          setOpenEditModal({ open: false, data: {} });
-
-          // Hiển thị thông báo xác nhận
-          confirmAlert({
-            title: "Thành công",
-            message: "Chất liệu đã được cập nhật thành công!",
-            buttons: [
-              {
-                label: "OK",
-                onClick: () => {
-                  // Cập nhật danh sách chất liệu và re-render
-                  setShouldRender((prev) => !prev);
-                },
-              },
-            ],
+    // Đóng modal trước khi xác nhận
+    setOpenEditModal({ open: false, data: {} });
+    setTimeout(() => {
+      confirmEdit(async () => {
+        try {
+          const response = await MaterialService.updateMaterial({
+            ...values,
+            materialId: openEditModal.data.materialId,
           });
-        } else {
-          console.error("Error:", response.data.message);
-          // Nếu cần, hiển thị thông báo lỗi
+
+          if (response.code === 0) {
+            // Cập nhật state local ngay lập tức
+            setMaterials(prevMaterials => 
+              prevMaterials.map(material => 
+                material.materialId === openEditModal.data.materialId 
+                  ? { ...material, ...values }
+                  : material
+              )
+            );
+
+            // Hiển thị thông báo xác nhận
+            confirmAlert({
+              title: "Thành công",
+              message: "Chất liệu đã được cập nhật thành công!",
+              buttons: [
+                {
+                  label: "OK",
+                  onClick: () => {}
+                },
+              ],
+            });
+          } else {
+            console.error("Error:", response.data.message);
+          }
+        } catch (error) {
+          console.error("Error updating material:", error);
         }
-      } catch (error) {
-        console.error("Error updating material:", error);
-        // Nếu cần, hiển thị thông báo lỗi
-      }
-    });
+      });
+    }, 200); // Đợi modal đóng hẳn
   };
 
   const onFinishCreate = async (values: any) => {
@@ -213,10 +228,10 @@ export default function StylePage() {
       try {
         const response = await MaterialService.createMaterial(values);
         if (response.code === 0) {
-          // setOpenCreateModal(false);
+          setOpenCreateModal(false);
           confirmAlert({
             title: "Thành công",
-            message: "Thương hiệu đã được thêm thành công!",
+            message: "Chất liệu đã được thêm thành công!",
             buttons: [
               {
                 label: "OK",
@@ -289,9 +304,6 @@ export default function StylePage() {
               <Button
                   type="primary"
                   htmlType="submit"
-                  onClick={() => {
-                    setOpenCreateModal(false);
-                  }}
               >
                 Thêm
               </Button>
@@ -318,7 +330,7 @@ export default function StylePage() {
               autoComplete="off"
           >
             <Form.Item
-                label="material Name"
+                label="Material Name"
                 name="name"
                 rules={[
                   { required: true, message: "Please input the material name!" },
@@ -330,9 +342,6 @@ export default function StylePage() {
               <Button
                   type="primary"
                   htmlType="submit"
-                  onClick={() => {
-                    setOpenEditModal(false);
-                  }}
               >
                 Lưu
               </Button>

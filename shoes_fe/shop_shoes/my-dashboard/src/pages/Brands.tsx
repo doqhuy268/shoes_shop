@@ -120,15 +120,25 @@ export default function BrandsPage() {
   const deleteBrandItems = (record: any) => {
     confirmDelete(async () => {
       try {
-        const response = await BrandService.deleteBrand(
-            record.brandId!
-        );
+        const response = await BrandService.deleteBrand(record.brandId!);
         console.log("Delete response:", response);
         if (response.code === 0) {
-          setShouldRender((prev) => !prev);
+          // Cập nhật state local ngay lập tức
+          setBrands(prevBrands => prevBrands.filter(brand => brand.brandId !== record.brandId));
+          
+          confirmAlert({
+            title: "Thành công",
+            message: "Thương hiệu đã được xóa thành công!",
+            buttons: [
+              {
+                label: "OK",
+                onClick: () => {}
+              },
+            ],
+          });
         }
       } catch (error) {
-        console.error("Error deleting material:", error);
+        console.error("Error deleting brand:", error);
       }
     });
   };
@@ -173,40 +183,42 @@ export default function BrandsPage() {
   };
 
   const onFinishEdit = async (values: any) => {
-    confirmEdit(async () => {
-      try {
-        const response = await BrandService.updateBrand({
-          ...values,
-          brandId: openEditModal.data.brandId,
-        });
-
-        if (response.code === 0) {
-          // Đóng modal sau khi thao tác thành công
-          setOpenEditModal({ open: false, data: {} });
-
-          // Hiển thị thông báo xác nhận
-          confirmAlert({
-            title: "Thành công",
-            message: "Thương hiệu đã được cập nhật thành công!",
-            buttons: [
-              {
-                label: "OK",
-                onClick: () => {
-                  // Cập nhật danh sách chất liệu và re-render
-                  setShouldRender((prev) => !prev);
-                },
-              },
-            ],
+    setOpenEditModal({ open: false, data: {} });
+    setTimeout(() => {
+      confirmEdit(async () => {
+        try {
+          const response = await BrandService.updateBrand({
+            ...values,
+            brandId: openEditModal.data.brandId,
           });
-        } else {
-          console.error("Error:", response.data.message);
-          // Nếu cần, hiển thị thông báo lỗi
+
+          if (response.code === 0) {
+            setBrands(prevBrands => 
+              prevBrands.map(brand => 
+                brand.brandId === openEditModal.data.brandId 
+                  ? { ...brand, ...values }
+                  : brand
+              )
+            );
+
+            confirmAlert({
+              title: "Thành công",
+              message: "Thương hiệu đã được cập nhật thành công!",
+              buttons: [
+                {
+                  label: "OK",
+                  onClick: () => {}
+                },
+              ],
+            });
+          } else {
+            console.error("Error:", response.data.message);
+          }
+        } catch (error) {
+          console.error("Error updating brand:", error);
         }
-      } catch (error) {
-        console.error("Error updating brands:", error);
-        // Nếu cần, hiển thị thông báo lỗi
-      }
-    });
+      });
+    }, 200);
   };
 
   const onFinishCreate = async (values: any) => {
@@ -214,7 +226,7 @@ export default function BrandsPage() {
       try {
         const response = await BrandService.createBrand(values);
         if (response.code === 0) {
-          // setOpenCreateModal(false);
+          setOpenCreateModal(false);
           setShouldRender((prev) => !prev);
           confirmAlert({
             title: "Thành công",
@@ -291,9 +303,6 @@ export default function BrandsPage() {
               <Button
                   type="primary"
                   htmlType="submit"
-                  onClick={() => {
-                    setOpenCreateModal(false);
-                  }}
               >
                 Thêm
               </Button>
@@ -332,9 +341,6 @@ export default function BrandsPage() {
               <Button
                   type="primary"
                   htmlType="submit"
-                  onClick={() => {
-                    setOpenEditModal(false);
-                  }}
               >
                 Lưu
               </Button>
