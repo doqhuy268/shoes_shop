@@ -24,6 +24,7 @@ const Brand = () => {
       _id: 902,
       title: "Epson",
     },
+
     {
       _id: 903,
       title: "Ricoh",
@@ -34,47 +35,33 @@ const Brand = () => {
     dispatch(toggleBrand(brand));
   };
 
-  const toggleShowBrands = () => {
-    setShowBrands(!showBrands);
-  };
-
   return (
-    <div className="mb-6 sm:mb-8">
-      <NavTitle 
-        title="Shop by Brand" 
-        icons={true} 
-        isOpen={showBrands}
-        onClick={toggleShowBrands}
-      />
-      
+    <div>
+      <div
+        onClick={() => setShowBrands(!showBrands)}
+        className="cursor-pointer"
+      >
+        <NavTitle title="Shop by Brand" icons={true} />
+      </div>
       {showBrands && (
         <motion.div
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5 }}
-          className="mt-2 sm:mt-3"
         >
-          <ul className="flex flex-col gap-2 sm:gap-3 md:gap-4 text-[#767676]">
+          <ul className="flex flex-col gap-4 text-sm lg:text-base text-[#767676]">
             {brands.map((item) => (
               <li
                 key={item._id}
-                className="border-b border-[#F0F0F0] pb-2 flex items-center hover:text-primeColor hover:border-gray-400 transition-colors duration-300"
+                className="border-b-[1px] border-b-[#F0F0F0] pb-2 flex items-center gap-2 hover:text-primeColor hover:border-gray-400 duration-300"
               >
-                <div className="flex items-center w-full">
-                  <label 
-                    htmlFor={`brand-${item._id}`} 
-                    className="flex items-center cursor-pointer py-1 w-full text-sm sm:text-base"
-                  >
-                    <input
-                      type="checkbox"
-                      id={`brand-${item._id}`}
-                      checked={checkedBrands.some((b) => b._id === item._id)}
-                      onChange={() => handleToggleBrand(item)}
-                      className="mr-3 w-4 h-4 sm:w-5 sm:h-5 accent-primeColor cursor-pointer"
-                    />
-                    <span>{item.title}</span>
-                  </label>
-                </div>
+                <input
+                  type="checkbox"
+                  id={item._id}
+                  checked={checkedBrands.some((b) => b._id === item._id)}
+                  onChange={() => handleToggleBrand(item)}
+                />
+                {item.title}
               </li>
             ))}
           </ul>

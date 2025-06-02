@@ -4,29 +4,140 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer components {
-  .hoverEffect {
-    @apply duration-300 cursor-pointer;
-  }
+/* Base Styles */
+body {
+  font-family: "Product Sans", "DM Sans", sans-serif;
+  @apply bg-primaryBg text-primaryText;
+}
 
-  .headerSedenavLi {
-    @apply text-gray-300 cursor-pointer hover:underline underline-offset-2 hover:text-white;
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  @apply font-titleFont font-medium;
+}
+
+/* Layout & Container */
+.container {
+  @apply mx-auto max-w-container px-4;
+}
+
+/* Header Styles */
+.header-link {
+  @apply text-primaryText hover:text-accentColor transition-colors;
+}
+
+.nav-link {
+  @apply text-primaryText hover:font-bold hover:underline underline-offset-4 transition-all;
+}
+
+nav .active li {
+  @apply font-bold underline text-accentColor;
+}
+
+/* Custom Components */
+.custom-btn {
+  @apply px-4 py-2 rounded-md transition-colors;
+}
+
+.btn-primary {
+  @apply bg-primeColor text-white hover:bg-opacity-90;
+}
+
+.btn-secondary {
+  @apply bg-gray-200 text-primaryText hover:bg-gray-300;
+}
+
+.product-card {
+  @apply bg-white rounded-lg overflow-hidden border border-lightBorder hover:shadow-cardShadow transition-all;
+}
+
+/* Hover Effects */
+.hoverEffect {
+  @apply duration-300 cursor-pointer;
+}
+
+.headerSedenavLi {
+  @apply text-secondaryText cursor-pointer hover:underline underline-offset-2 hover:text-primaryText transition-colors;
+}
+
+/* Sliders */
+.custom-slider .slick-slide > div {
+  padding: 0 8px;
+}
+
+.custom-slider .slick-list {
+  margin: 0 -8px;
+}
+
+@media (min-width: 768px) {
+  .custom-slider .slick-slide > div {
+    padding: 0 12px;
   }
   
-  /* Add responsive utilities */
-  .responsive-container {
-    @apply w-full px-4 mx-auto sm:px-6 md:px-8 lg:px-12;
-  }
-  
-  .responsive-text {
-    @apply text-sm sm:text-base md:text-lg lg:text-xl;
-  }
-  
-  .responsive-heading {
-    @apply text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold;
+  .custom-slider .slick-list {
+    margin: 0 -12px;
   }
 }
 
+/* Product Details */
+.view-product-details h2 {
+  @apply text-xl md:text-2xl mb-4;
+}
+
+.view-product-details h3 {
+  @apply text-lg md:text-xl mb-3;
+}
+
+.view-product-details ul {
+  @apply pl-4 md:pl-6 mb-4 list-disc;
+}
+
+.view-product-details a {
+  @apply text-accentColor underline hover:text-blue-700;
+}
+
+.view-product-details img {
+  @apply w-full md:w-4/5 lg:w-3/5 mx-auto my-4 object-contain rounded-lg;
+}
+
+/* Scrollbar Hide */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Loading Skeleton */
+.box-skeleton {
+  background: #e2e8f0;
+  background: linear-gradient(110deg, #e2e8f0 8%, #f1f5f9 18%, #e2e8f0 33%);
+  background-size: 200% 100%;
+  animation: 1.5s shine linear infinite;
+}
+
+@keyframes shine {
+  to {
+    background-position-x: -200%;
+  }
+}
+
+/* Custom Tabs */
+.custom-order-details-tabs .ant-tabs-tab-btn {
+  @apply flex items-center;
+}
+
+.ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  @apply text-accentColor;
+}
+
+/* Image Preview */
+.ant-image-preview-wrap {
+  z-index: 9999 !important;
+}
+
+/* Font Face */
 @font-face {
   font-family: 'Product Sans';
   font-weight: 400;
@@ -39,130 +150,19 @@
   src: local('Product Sans'), url('./assets/fonts/product_sans_bold.otf') format('truetype');
 }
 
-body {
-  font-family: "Product Sans";
-  font-size: 16px;
-  line-height: 1.5;
-}
-
-/* Responsive font sizing */
-@media screen and (max-width: 768px) {
-  body {
-    font-size: 14px;
-  }
-}
-
-nav .active li {
-  color: black;
-  font-weight: 600;
-  text-decoration: 1px underline black;
-}
-
-/* More comprehensive media queries */
-@media screen and (max-width: 992px) {
-  /* Tablet styles */
-  .view-product-details img {
-    width: 70%;
-  }
-}
-
-@media screen and (max-width: 768px) {
-  /* Small tablet styles */
-  .view-product-details img {
-    width: 85%;
-  }
-}
-
-@media screen and (max-width: 665px) {
+/* Responsive Overrides */
+@media screen and (max-width: 767px) {
   nav .active li {
-    color: white;
-    font-weight: 600;
-    text-decoration: 1px underline white;
-  }
-}
-
-@media screen and (max-width: 480px) {
-  /* Mobile styles */
-  .view-product-details img {
-    width: 100%;
+    @apply text-accentColor;
   }
   
-  .custom-slider .slick-slide>div {
-    padding: 0 8px;
-  }
-  
-  .custom-slider .slick-list {
-    margin: 0 -8px;
+  .product-grid {
+    @apply grid-cols-2;
   }
 }
 
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-}
-
-.box-skeleton {
-  background: #eee;
-  background: linear-gradient(110deg, #ececec 8%, #f5f5f5 18%, #ececec 33%);
-  background-size: 200% 100%;
-  animation: 1.5s shine linear infinite;
-}
-
-@keyframes shine {
-  to {
-    background-position-x: -200%;
+@media screen and (max-width: 575px) {
+  .container {
+    @apply px-3;
   }
 }
-
-.custom-slider .slick-slide>div {
-  padding: 0 15px;
-}
-
-.custom-slider .slick-list {
-  margin: 0 -15px;
-}
-
-.custom-order-details-tabs .ant-tabs-tab-btn {
-  display: flex;
-  align-items: center;
-}
-
-/* Responsive typography for product details */
-.view-product-details h2 {
-  font-size: 20px;
-  line-height: 1.5;
-}
-
-.view-product-details h3 {
-  font-size: 18px;
-  line-height: 1.5;
-}
-
-@media screen and (max-width: 480px) {
-  .view-product-details h2 {
-    font-size: 18px;
-  }
-  
-  .view-product-details h3 {
-    font-size: 16px;
-  }
-}
-
-.view-product-details ul {
-  padding-left: 16px;
-}
-
-.view-product-details a {
- text-decoration: underline;
-}
-
-/* Make images more responsive */
-.view-product-details img {
-  max-width: 100%;
-  height: auto;
-  margin: 0 auto;
-  object-fit: contain;
- }
-
- .ant-image-preview-wrap {
-  z-index: 9999 !important;
- }

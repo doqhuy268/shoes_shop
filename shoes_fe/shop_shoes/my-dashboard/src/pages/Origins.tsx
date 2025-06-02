@@ -119,21 +119,19 @@ export default function StylePage() {
   const deleteStyleItems = (record: any) => {
     confirmDelete(async () => {
       try {
-        const response = await OriginService.deleteOrigin(
-          record.originId!
-        );
+        const response = await OriginService.deleteOrigin(record.originId!);
         console.log("Delete response:", response);
         if (response.code === 0) {
+          // Cập nhật state local ngay lập tức
+          setOrigins(prevOrigins => prevOrigins.filter(origin => origin.originId !== record.originId));
+          
           confirmAlert({
             title: "Thành công",
-            message: "Xuât xứ xóa thành công!",
+            message: "Xuất xứ đã được xóa thành công!",
             buttons: [
               {
                 label: "OK",
-                onClick: () => {
-                  // Cập nhật danh sách chất liệu và re-render
-                  setShouldRender((prev) => !prev);
-                },
+                onClick: () => {}
               },
             ],
           });
@@ -184,40 +182,42 @@ export default function StylePage() {
   };
 
   const onFinishEdit = async (values: any) => {
-    confirmEdit(async () => {
-      try {
-        const response = await OriginService.updateOrigin({
-          ...values,
-          originId: openEditModal.data.originId,
-        });
-
-        if (response.code === 0) {
-          // Đóng modal sau khi thao tác thành công
-          setOpenEditModal({ open: false, data: {} });
-
-          // Hiển thị thông báo xác nhận
-          confirmAlert({
-            title: "Thành công",
-            message: "Xuất xứ đã được cập nhật thành công!",
-            buttons: [
-              {
-                label: "OK",
-                onClick: () => {
-                  // Cập nhật danh sách chất liệu và re-render
-                  setShouldRender((prev) => !prev);
-                },
-              },
-            ],
+    setOpenEditModal({ open: false, data: {} });
+    setTimeout(() => {
+      confirmEdit(async () => {
+        try {
+          const response = await OriginService.updateOrigin({
+            ...values,
+            originId: openEditModal.data.originId,
           });
-        } else {
-          console.error("Error:", response.data.message);
-          // Nếu cần, hiển thị thông báo lỗi
+
+          if (response.code === 0) {
+            setOrigins(prevOrigins => 
+              prevOrigins.map(origin => 
+                origin.originId === openEditModal.data.originId 
+                  ? { ...origin, ...values }
+                  : origin
+              )
+            );
+
+            confirmAlert({
+              title: "Thành công",
+              message: "Xuất xứ đã được cập nhật thành công!",
+              buttons: [
+                {
+                  label: "OK",
+                  onClick: () => {}
+                },
+              ],
+            });
+          } else {
+            console.error("Error:", response.data.message);
+          }
+        } catch (error) {
+          console.error("Error updating origin:", error);
         }
-      } catch (error) {
-        console.error("Error updating origin:", error);
-        // Nếu cần, hiển thị thông báo lỗi
-      }
-    });
+      });
+    }, 200);
   };
 
   const onFinishCreate = async (values: any) => {

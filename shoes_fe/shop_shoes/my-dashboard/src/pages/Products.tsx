@@ -61,6 +61,7 @@ const ProductPage: React.FC = () => {
   const [form] = Form.useForm();
   const details = useRef<string>("");
   const [formattedPrice, setFormattedPrice] = useState<string>("");
+  const [dataReady, setDataReady] = useState(false);
 
   const formatNumber = (num) => {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -112,6 +113,7 @@ const ProductPage: React.FC = () => {
       setStyles(fetchData[2]?.data);
       setMaterials(fetchData[3]?.data);
       setOrigins(fetchData[4]?.data);
+      setDataReady(true);
     })();
   }, []);
 
@@ -199,10 +201,49 @@ const ProductPage: React.FC = () => {
       mode: "edit",
       data: {
         ...product,
+        brandId: product.brandId || product.brand?.brandId,
+        styleId: product.styleId || product.styles?.styleId,
+        materialId: product.materialId || product.materials?.materialId,
+        originId: product.originId || product.origins?.originId,
         productDetails,
       },
     });
   };
+
+  useEffect(() => {
+    if (modalInfo.open && modalInfo.mode === "edit" && dataReady) {
+      const product = modalInfo.data;
+      if (!product) return;
+      const productDetails =
+        product?.productDetails?.map((detail) => ({
+          sizeId: detail.sizeId,
+          quantity: detail.quantity,
+        })) || [];
+      const logValue = {
+        name: product.name,
+        importPrice: product.importPrice,
+        price: product.price,
+        status: product.status,
+        brandId: product.brandId,
+        styleId: product.styleId,
+        materialId: product.materialId,
+        originId: product.originId,
+        productDetails: productDetails,
+      };
+      console.log('SET FIELDS VALUE:', logValue);
+      form.setFieldsValue({
+        name: product.name,
+        importPrice: product.importPrice,
+        price: product.price,
+        status: product.status,
+        brandId: product.brandId ? Number(product.brandId) : undefined,
+        styleId: product.styleId ? Number(product.styleId) : undefined,
+        materialId: product.materialId ? Number(product.materialId) : undefined,
+        originId: product.originId ? Number(product.originId) : undefined,
+        productDetails: productDetails,
+      });
+    }
+  }, [modalInfo, dataReady, form]);
 
   const columns = [
     {
@@ -294,29 +335,25 @@ const ProductPage: React.FC = () => {
         // Gọi API để cập nhật trạng thái sản phẩm
         const response = await ProductService.updateProductStatus(record.productId, checked);
   
-        // Kiểm tra mã trạng thái trả về
+        // Kiểm tra kết quả trả về
         if (response && response.status === 200) {
+            // Hiển thị thông báo thành công
             message.success('Cập nhật trạng thái sản phẩm thành công');
   
-            // Cập nhật danh sách sản phẩm
+            // Cập nhật danh sách sản phẩm trong state để hiển thị ngay mà không cần reload
             setProducts((prev) => {
-                if (!Array.isArray(prev)) {
-                    return prev;
-                }
-  
-                const updatedProducts = prev.map((item) =>
+                return prev.map((item) =>
                     item.productId === record.productId
                         ? { ...item, status: checked }
                         : item
                 );
-                return updatedProducts;
             });
         } else {
             message.error('Cập nhật trạng thái sản phẩm thất bại');
         }
     } catch (error) {
         console.error("Lỗi khi cập nhật trạng thái sản phẩm", error);
-        message.error('Có lỗi xảy ra khi cập nhật sản phẩm');
+        message.error('Có lỗi xảy ra khi cập nhật trạng thái sản phẩm');
     }
 };
 
@@ -395,13 +432,14 @@ const ProductPage: React.FC = () => {
         onClose={() => {
           setFileList([]);
           details.current = "";
+          form.resetFields();
           setModalInfo({ open: false, mode: modalInfo.mode });
         }}
       >
         <Form
+          form={form}
           className="grid grid-cols-2 gap-4"
           layout="vertical"
-          initialValues={modalInfo.data}
           onFinish={onFinish}
         >
           {/* Product Form */}
@@ -456,7 +494,7 @@ const ProductPage: React.FC = () => {
           >
             <Select placeholder="Chọn tại đây">
               {brands?.map((brand) => (
-                <Option key={brand?.brandId} value={brand?.brandId}>
+                <Option key={brand?.brandId} value={Number(brand?.brandId)}>
                   {brand?.name}
                 </Option>
               ))}
@@ -473,7 +511,7 @@ const ProductPage: React.FC = () => {
               {styles?.map((style) => (
                 <Option
                   key={style?.styleId + style?.name}
-                  value={style?.styleId}
+                  value={Number(style?.styleId)}
                 >
                   {style?.name}
                 </Option>
@@ -492,7 +530,7 @@ const ProductPage: React.FC = () => {
           >
             <Select placeholder="Chọn tại đây">
               {materials?.map((material) => (
-                <Option key={material?.materialId} value={material?.materialId}>
+                <Option key={material?.materialId} value={Number(material?.materialId)}>
                   {material?.name}
                 </Option>
               ))}
@@ -501,7 +539,7 @@ const ProductPage: React.FC = () => {
           <Form.Item name="originId" label="Xuất xứ">
             <Select placeholder="Chọn tại đây">
               {origins.map((origin) => (
-                <Option key={origin.originId} value={origin.originId}>
+                <Option key={origin.originId} value={Number(origin.originId)}>
                   {origin.name}
                 </Option>
               ))}

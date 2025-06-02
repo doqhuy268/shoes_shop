@@ -102,6 +102,8 @@ export class Products extends Model {
   }
   @BeforeUpdate
   static updateProducts(instance: Products) {
-    instance.priceDiscount = instance.price;
+    if (instance.changed('price') && !instance.changed('priceDiscount')) {
+      instance.priceDiscount = instance.price;
+    }
   }
 }
